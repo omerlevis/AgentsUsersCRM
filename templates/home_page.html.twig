@@ -1,0 +1,314 @@
+{% extends 'base.html.twig' %}
+{% block title %}Finantick CRM{% endblock %}
+{% block body %}
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body onload="Welcome()">
+<div id="app" style="text-align:center">
+  <br>
+<h2>Welcome to FinantickCRM </h2>
+  {% if app.user %}
+    <div class="mb-3" style="text-align: center">
+        You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+    <u style="color: blue"><h4>Personal Info </h4> </u>
+    <b>Username: </b> {{ app.user.username }} <br>
+    <b>Date Created:</b> {{ app.user.dateCreated |date }} <br>
+    <b>Last Login:</b> {{ app.user.loginTime |date }} <br>
+    <b>Agent ID :</b>
+    {{ app.user.agent.id|default() }} <br>
+    <b>Agent Username:</b> {{ app.user.agent.username|default('') }} <br> <br>
+
+      {% if users_to_display is not null %}
+    <h3 style="color: brown">Your Users</h3>
+
+    <button class="btn btn-primary btn-lg"
+            v-for="btn1 in button_update"
+            :key="btn1.id" :disabled="btn1.disabled"
+            @click="updButtonClicked(btn1)"
+    >
+      (* btn1.text *)
+    </button>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <button class="btn btn-primary btn-lg"
+            v-for="btn2 in button_save"
+            :key="btn2.id" :disabled="btn2.disabled"
+            @click="saveButtonClicked(btn2)"
+    >
+      (* btn2.text *)
+    </button>
+    <br> <br>
+  <div v-show="button_update[0].disabled === true"> User`s ID to update:
+    <span v-for=" users in checkedNames" class="users_id_to_update">
+       (* users *)</span> <br>
+    <label for="new_agent">Choose agent: </label>
+    <select v-model="new_agent">
+      <option :value="null" disabled selected > Choose here
+      </option>
+    {%  for agents_to_display in agents_to_display %}
+      <option value="{{ agents_to_display.agent_id }}">
+        {{ agents_to_display.agent_id }} , {{ agents_to_display.username }}</option>
+    {% endfor %}
+    </select>
+
+</div>
+
+    <table class="table table-striped table-bordered" style="direction:ltr; text-align:left; width:auto;margin-left: auto;
+  margin-right: auto;">
+      <thead>
+      <tr>
+        <th v-show="button_update[0].disabled === true"> Select
+          </th>
+        <th>user ID</th>
+        <th>UserName</th>
+        <th>Created_at</th>
+        <th>Last_Login</th>
+        <th>Agent_id</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      {%  for users_to_display in users_to_display %}
+        <tr>
+          <td v-show="button_update[0].disabled === true">
+            <input type="checkbox" id="{{ users_to_display.id }}" value="{{ users_to_display.id }}"
+                   v-model="checkedNames">
+            <label for="{{ users_to_display.id }}">{{ users_to_display.id }}</label>
+          </td>
+          <td style="direction:ltr;"> {{ users_to_display.id }} </td>
+          <td> {{ users_to_display.username }} </td>
+          <td> {{ users_to_display.date_created }} </td>
+          <td> {{ users_to_display.login_time }} </td>
+          <td> {{ users_to_display.agent_id }} </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+{% endif %}
+
+{% if agents_to_display is not null %}
+<br>
+    <h3 style="color: brown">Your Agents</h3>
+
+    <button class="btn btn-primary btn-lg"
+            v-for="btn1 in button_update2"
+            :key="btn1.id" :disabled="btn1.disabled"
+            @click="updButtonClicked2(btn1)"
+    >
+      (* btn1.text *)
+    </button>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <button class="btn btn-primary btn-lg"
+            v-for="btn2 in button_save2"
+            :key="btn2.id" :disabled="btn2.disabled"
+            @click="saveButtonClicked2(btn2)"
+    >
+      (* btn2.text *)
+    </button>
+    <br> <br>
+    <div v-show="button_update2[0].disabled === true"> User`s ID to update:
+      <span v-for=" users in checkedNames2" class="users_id_to_update">
+       (* users *)</span> <br>
+      <label for="new_agent">Choose agent: </label>
+      <select v-model="new_agent2">
+        <option :value="null" disabled selected > Choose here
+        </option>
+        {%  for agents_to_display in agents_to_display %}
+          <option value="{{ agents_to_display.agent_id }}">
+            {{ agents_to_display.agent_id }} , {{ agents_to_display.username }}</option>
+        {% endfor %}
+      </select>
+
+    </div>
+
+    <table class="table table-striped table-bordered" style="direction:ltr; text-align:left; width:auto;margin-left: auto;
+  margin-right: auto;">
+      <thead>
+      <tr>
+        <th v-show="button_update2[0].disabled === true"> Select
+        </th>
+        <th>user ID</th>
+        <th>UserName</th>
+        <th>Created_at</th>
+        <th>Last_Login</th>
+        <th>Agent_id</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      {%  for agents_to_display in agents_to_display  %}
+        <tr>
+          <td v-show="button_update2[0].disabled === true">
+            {% if app.user.id!=agents_to_display.id %}
+            <input type="checkbox" id="{{ agents_to_display.id }}" value="{{ agents_to_display.id }}"
+                   v-model="checkedNames2">
+            <label for="{{ agents_to_display.id }}">{{ agents_to_display.id }}</label>
+      {% else %}
+        its you :)
+            {% endif %}
+          </td>
+          <td style="direction:ltr;"> {{ agents_to_display.id }} </td>
+          <td> {{ agents_to_display.username }} </td>
+          <td> {{ agents_to_display.date_created }} </td>
+          <td> {{ agents_to_display.login_time }} </td>
+          <td> {{ agents_to_display.agent_id }} </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+{% endif %}
+
+      {% if logs_to_display is not null %}
+<br> <br>
+    <h3 style="color: brown">Logs</h3>
+    <button class="btn btn-primary btn-lg"
+            v-for="btn1 in button_update3"
+            :key="btn1.id" :disabled="btn1.disabled"
+            @click="updButtonClicked3(btn1)" style="font-size:15px"
+    >
+      (* btn1.text *)
+    </button>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <button class="btn btn-primary btn-lg"
+            v-for="btn2 in button_save3"
+            :key="btn2.id" :disabled="btn2.disabled"
+            @click="saveButtonClicked3(btn2)"
+    >
+      (* btn2.text *)
+    </button>
+    <div style="text-align: center">
+      <ul  style=" display: inline-block;text-align: left;" v-show="button_update3[0].disabled === true">
+
+          {%  for logscounting_to_display in logscounting_to_display  %}
+
+              <li>user_id: {{ logscounting_to_display.user_id }} , user name: {{ logscounting_to_display.username}} </li>
+
+          {% endfor %}
+      </ul>
+      </div>
+    <table class="table table-striped table-bordered" style="direction:ltr; text-align:left; width:auto;margin-left: auto;
+  margin-right: auto;">
+      <thead>
+      <tr>
+        <th>Log ID</th>
+        <th>Acrion Name</th>
+        <th>Created At</th>
+        <th>User_id</th>
+      </tr>
+      </thead>
+      <tbody>
+      {%  for logs_to_display in logs_to_display  %}
+        <tr>
+          <td style="direction:ltr;"> {{ logs_to_display.id }} </td>
+          <td> {{ logs_to_display.action_name }} </td>
+          <td> {{ logs_to_display.date_created }} </td>
+          <td> {{ logs_to_display.user_id }} </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+      {% endif %}
+
+
+
+  {% else %}
+  <a href="{{ path('app_login') }}" class="btn btn-primary" role="button" style="width:200px">LOGIN</a>
+  &nbsp;&nbsp;
+  <a href="{{ path('app_register') }}" class="btn btn-primary" role="button" style="width:200px">SIGNUP</a>
+  {% endif %}
+</div>
+
+<script>
+    {% if app.user %}
+  {% for message in app.flashes('success') %}
+function Welcome(){
+  alert('{{message }}'+'{{ app.user.username }}'+'!');
+  $url = 'http://localhost:8000/finantick-crm/userlogin/user_id='+{{ app.user.id }};
+  window.location = $url;
+}
+  {% endfor %}
+    {% endif %}
+
+  const { createApp } = Vue
+
+  createApp({
+    delimiters: ['(*', '*)'],
+
+    data() {
+      return {
+        button_update: [
+          { id: 1, text: 'Update Agents', disabled: false },
+        ],
+        button_save: [
+          { id: 1, text: 'Save Changes', disabled: true },
+        ],
+        checkedNames: [],
+        new_agent : null,
+        button_update2: [
+          { id: 1, text: 'Update Agents', disabled: false },
+        ],
+        button_save2: [
+          { id: 1, text: 'Save Changes', disabled: true },
+        ],
+        checkedNames2: [],
+        new_agent2 : null,
+        button_update3: [
+          { id: 1, text: 'Login at least 2 time in the last 5 min', disabled: false },
+        ],
+        button_save3: [
+          { id: 1, text: 'Close', disabled: true },
+        ],
+      }
+    },
+    methods: {
+      updButtonClicked: function( button ) {
+        button.disabled = true;
+        this.button_save[0].disabled=false;
+      },
+      saveButtonClicked: function( button ) {
+        if(this.checkedNames == null || this.new_agent ==null) {
+          alert('Please select values');
+        }
+        else {
+          $url = 'http://localhost:8000/finantick-crm/edit/user_id=' + this.checkedNames + '%agent_id=' + this.new_agent;
+          window.location = $url;
+          button.disabled = true;
+          this.button_update[0].disabled = false;
+        }
+
+      },
+      updButtonClicked2: function( button ) {
+        button.disabled = true;
+        this.button_save2[0].disabled=false;
+      },
+      saveButtonClicked2: function( button ) {
+        if(this.checkedNames2 == null || this.new_agent2 ==null) {
+          alert('Please select values');
+        }
+        else {
+          $url = 'http://localhost:8000/finantick-crm/edit/user_id=' + this.checkedNames2 + '%agent_id=' + this.new_agent2;
+          window.location = $url;
+          button.disabled = true;
+          this.button_update2[0].disabled = false;
+        }
+
+      },
+      updButtonClicked3: function( button ) {
+        button.disabled = true;
+        this.button_save3[0].disabled=false;
+      },
+      saveButtonClicked3: function( button ) {
+          button.disabled = true;
+          this.button_update3[0].disabled = false;
+      },
+    }
+
+  }).mount('#app')
+
+</script>
+
+</body>
+
+</html>
+{% endblock %}
